@@ -223,6 +223,7 @@
   <button class="tab-btn" onclick="showTab('pareto')">📈 Pareto 80/20</button>
   <button class="tab-btn" onclick="showTab('deplacement')">🚗 Déplacements Tech.</button>
   <button class="tab-btn" onclick="showTab('age')">👥 Tranches d'âges</button>
+  <button class="tab-btn" onclick="showTab('senior')">🧾 Résumé séniors</button>
   <!-- <button class="tab-btn" onclick="showTab('simulation')">🔮 Simulation &amp; ROI</button> -->
   <!-- <button class="tab-btn" onclick="showTab('marketing')">📦 Marketing</button> -->
 </div>
@@ -285,11 +286,22 @@
       <div class="kpi-bar" style="width:20%;background:linear-gradient(90deg,var(--red),#f97316)"></div>
     </div>
     <div class="kpi-card blue">
-      <div class="kpi-icon">⏱️</div>
-      <div class="kpi-label">Durée moy. appel</div>
-      <div class="kpi-value">28,5 min</div>
-      <div class="kpi-sub">Tél : 31,6 min | Tech : 20,2 min</div>
-      <div class="kpi-bar" style="width:55%"></div>
+      <div class="kpi-icon">🔢</div>
+      <div class="kpi-label">Nombre d'appels évitables</div>
+      <div class="kpi-value" id="senior-total">215</div>
+      <div class="kpi-sub">Extrait fourni</div>
+      <div class="kpi-sub" style="margin-top:8px;font-size:0.78rem;color:var(--text2)">
+        <strong>Causes incluses :</strong>
+        <ul style="margin:6px 0 0 16px;line-height:1.35">
+          <li>Configuration box - oubli mot de passe WiFi</li>
+          <li>Installation nouvelle box - premier branchement</li>
+          <li>Installation nouvelle box - upgrade d'offre</li>
+          <li>Installation nouvelle box - déménagement</li>
+          <li>Box éteinte - ne s'allume plus</li>
+          <li>Box éteinte - voyants rouges</li>
+        </ul>
+      </div>
+      <div class="kpi-bar" style="width:80%"></div>
     </div>
   </div>
 
@@ -943,6 +955,46 @@
 </div>
 
 <!-- ═══════════════════════ SCRIPTS ═══════════════════════ -->
+<div class="tab-content" id="tab-senior">
+  <div class="section-title"><div class="icon">🧾</div>Appels évitables</div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">🔢</div>
+      <div class="kpi-label">Nombre d'appels évitables</div>
+      <div class="kpi-value" id="senior-total">215</div>
+      <div class="kpi-bar" style="width:80%"></div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">👴</div>
+      <div class="kpi-label">Part de 60 ans ou +</div>
+      <div class="kpi-value" id="senior-before-count">82</div>
+      <div class="kpi-bar" style="width:40%;background:linear-gradient(90deg,var(--green),#6ee7b7)"></div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">👶</div>
+      <div class="kpi-label">Part de -de 60 ans</div>
+      <div class="kpi-value" id="senior-after-count">133</div>
+      <div class="kpi-bar" style="width:60%;background:linear-gradient(90deg,var(--accent2),#ec4899)"></div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>📊 Répartition par génération</h3>
+      <div class="chart-wrapper"><canvas id="chartSeniorPie"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>📈 Pourcentage de 60 ans ou +</h3>
+      <div class="chart-wrapper short" style="display:flex;align-items:center;justify-content:center;">
+        <div style="text-align:center;color:var(--text2)">
+          <div style="font-size:42px;font-weight:800;color:var(--accent)" id="senior-pct">38,14%</div>
+          <div style="margin-top:6px;color:var(--text2)">de 60 ans ou +</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 const MONTHS = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
 const APPELS = [50678,45797,46064,46184,45901,45581,43260,38630,55074,46186,45449,43001];
@@ -1425,6 +1477,29 @@ new Chart(document.getElementById('chartBoxAbo'), {
     type:'pie',
     data:{ labels, datasets:[{ data:counts, backgroundColor: labels.map((_,i)=>COLORS[i%COLORS.length]) }]},
     options:{ plugins:{ legend:{ position:'right', align:'center', labels:{font:{size:11}, padding:12} } } }
+  });
+})();
+
+// ─── TAB Résumé séniors ───
+(function(){
+  const total = 215;
+  const before1967 = 82;
+  const after1967 = 133;
+  const pct = '38,14%';
+  const elTotal = document.getElementById('senior-total');
+  const elBefore = document.getElementById('senior-before-count');
+  const elAfter = document.getElementById('senior-after-count');
+  const elPct = document.getElementById('senior-pct');
+  if(elTotal) elTotal.innerText = total;
+  if(elBefore) elBefore.innerText = before1967;
+  if(elAfter) elAfter.innerText = after1967;
+  if(elPct) elPct.innerText = pct;
+
+  const ctx = document.getElementById('chartSeniorPie');
+  if(ctx) new Chart(ctx, {
+    type:'pie',
+    data:{ labels:['60 ans et +','- de 60 ans'], datasets:[{ data:[before1967, after1967], backgroundColor:['rgba(79,142,247,0.85)','rgba(52,211,153,0.85)'] }]},
+    options:{ plugins:{ legend:{ position:'right', labels:{font:{size:12}, padding:12} } } }
   });
 })();
 
