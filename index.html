@@ -222,6 +222,7 @@
   <button class="tab-btn" onclick="showTab('appels')">📞 Appels &amp; Causes</button>
   <button class="tab-btn" onclick="showTab('pareto')">📈 Pareto 80/20</button>
   <button class="tab-btn" onclick="showTab('deplacement')">🚗 Déplacements Tech.</button>
+  <button class="tab-btn" onclick="showTab('age')">👥 Tranches d'âges</button>
   <!-- <button class="tab-btn" onclick="showTab('simulation')">🔮 Simulation &amp; ROI</button> -->
   <!-- <button class="tab-btn" onclick="showTab('marketing')">📦 Marketing</button> -->
 </div>
@@ -300,6 +301,7 @@
         <p>La cause n°1 (112 cas) est entièrement évitable via un portail self-service ou une app mobile de diagnostic.</p>
       </div>
     </div>
+      <!-- tab-age moved to top-level (was nested inside insights-grid) -->
     <div class="insight-card danger">
       <div class="insight-icon">🔴</div>
       <div>
@@ -360,6 +362,58 @@
 <!-- ════════════════════════════════════════════════════ -->
 <!--  TAB 2 – FINANCE                                   -->
 <!-- ════════════════════════════════════════════════════ -->
+      <!-- ════════════════════════════════════════════════════ -->
+      <!--  TAB – TRANCHES D'ÂGES                              -->
+      <!-- ════════════════════════════════════════════════════ -->
+      <div class="tab-content" id="tab-age">
+        <div class="section-title"><div class="icon">👥</div> Analyse par tranches d'âges</div>
+
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+          <div class="kpi-card blue">
+            <div class="kpi-icon">🔢</div>
+            <div class="kpi-label">Total demandes (éch.)</div>
+            <div class="kpi-value" id="age-total">574</div>
+            <div class="kpi-sub">Donnée fournie — répartition par tranches</div>
+            <div class="kpi-bar" style="width:60%"></div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-icon">🎯</div>
+            <div class="kpi-label">Tranche dominante</div>
+            <div class="kpi-value" id="age-top">40-49</div>
+            <div class="kpi-sub">114 demandes</div>
+            <div class="kpi-bar" style="width:40%;background:linear-gradient(90deg,var(--green),#6ee7b7)"></div>
+          </div>
+          <div class="kpi-card purple">
+            <div class="kpi-icon">📈</div>
+            <div class="kpi-label">Âge moyen estimé</div>
+            <div class="kpi-value" id="age-mean">50.4</div>
+            <div class="kpi-sub">Moyenne pondérée (approx.)</div>
+            <div class="kpi-bar" style="width:50%;background:linear-gradient(90deg,var(--accent2),#ec4899)"></div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3>📊 Répartition par tranche d'âge</h3>
+            <div class="chart-wrapper"><canvas id="chartAgeDist"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <h3>🧾 Pourcentage par tranche</h3>
+            <div class="chart-wrapper"><canvas id="chartAgePie"></canvas></div>
+          </div>
+          <div class="chart-card full">
+            <h3>📋 Détail par tranche</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>Tranche d'âge</th><th>Total demandes</th><th>%</th></tr>
+                </thead>
+                <tbody id="tbl-age-tranches"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
 <div class="tab-content" id="tab-finance">
   <div class="section-title"><div class="icon">💰</div> Analyse Financière – Directrice Financière</div>
 
@@ -637,6 +691,11 @@
     </table>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!--  TAB – TRANCHES D'ÂGES                              -->
+<!-- ════════════════════════════════════════════════════ -->
+
 
 <!-- ════════════════════════════════════════════════════ -->
 <!--  TAB 6 – SIMULATION                                -->
@@ -922,6 +981,14 @@ function showTab(id){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
   document.querySelector(`[onclick="showTab('${id}')"]`).classList.add('active');
+  // after tab switch, resize charts that may have been rendered while hidden
+  setTimeout(()=>{
+    try{
+      window.chartAgeDist && window.chartAgeDist.resize && window.chartAgeDist.resize();
+      window.chartAgePie && window.chartAgePie.resize && window.chartAgePie.resize();
+      window.chartAgeStacked && window.chartAgeStacked.resize && window.chartAgeStacked.resize();
+    }catch(e){/* ignore */}
+  },120);
 }
 
 Chart.defaults.color = '#94a3b8';
@@ -1308,6 +1375,44 @@ new Chart(document.getElementById('chartBoxAbo'), {
     scales:{ y:{stacked:true,grid:{color:'rgba(255,255,255,0.05)'}}, x:{stacked:true,grid:{display:false}} }
   }
 });
+
+// ─── TAB – TRANCHES D'ÂGES (analyse fournie) ───
+(function(){
+  const labels = ['21–29','30–39','40-49','50-59','60-69','70-79'];
+  const counts = [67,103,114,108,104,78];
+  const total = counts.reduce((s,v)=>s+v,0);
+  const perc = counts.map(c=>+(c/total*100).toFixed(1));
+
+  // weighted mean using midpoints
+  const mid = [25,35,45,55,65,75];
+  const mean = +(counts.reduce((s,c,i)=>s + c*mid[i],0)/total).toFixed(1);
+  document.getElementById('age-total').innerText = total;
+  const topIdx = counts.indexOf(Math.max(...counts));
+  document.getElementById('age-top').innerText = labels[topIdx];
+  document.getElementById('age-mean').innerText = mean;
+
+  // table
+  const tbl = document.getElementById('tbl-age-tranches');
+  tbl.innerHTML = '';
+  labels.forEach((lab,i)=>{
+    tbl.innerHTML += `<tr><td>${lab}</td><td>${counts[i]}</td><td>${perc[i]}%</td></tr>`;
+  });
+
+  // bar chart
+  new Chart(document.getElementById('chartAgeDist'), {
+    type:'bar',
+    data:{ labels, datasets:[{ label:'Demandes', data:counts, backgroundColor: labels.map((_,i)=>COLORS[i%COLORS.length]) }]},
+    options:{ plugins:{legend:{display:false}}, scales:{ y:{ grid:{color:'rgba(255,255,255,0.05)'} } } }
+  });
+
+  // diagramme de secteur (pie)
+  new Chart(document.getElementById('chartAgePie'), {
+    type:'pie',
+    data:{ labels, datasets:[{ data:counts, backgroundColor: labels.map((_,i)=>COLORS[i%COLORS.length]) }]},
+    options:{ plugins:{ legend:{ position:'bottom', labels:{font:{size:11}} } } }
+  });
+})();
+
 </script>
 </body>
 </html>
