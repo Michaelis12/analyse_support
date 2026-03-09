@@ -224,6 +224,7 @@
   <button class="tab-btn" onclick="showTab('deplacement')">🚗 Déplacements Tech.</button>
   <button class="tab-btn" onclick="showTab('age')">👥 Tranches d'âges</button>
   <button class="tab-btn" onclick="showTab('senior')">🧾 Détails des appels évitables</button>
+  <button class="tab-btn" onclick="showTab('boxrep')">📦 Box &amp; Pannes</button>
   <!-- <button class="tab-btn" onclick="showTab('simulation')">🔮 Simulation &amp; ROI</button> -->
   <!-- <button class="tab-btn" onclick="showTab('marketing')">📦 Marketing</button> -->
 </div>
@@ -954,6 +955,161 @@
   </div>
 </div>
 
+<!-- ════════════════════════════════════════════════════ -->
+<!--  TAB – BOX & PANNES                                -->
+<!-- ════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-boxrep">
+  <div class="section-title"><div class="icon">📦</div> Représentation des Box dans les Appels pour Pannes</div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card blue">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-label">Total box vendues</div>
+      <div class="kpi-value">96 280</div>
+      <div class="kpi-sub">Super'box + Rapid'box + Top'Box</div>
+      <div class="kpi-bar" style="width:100%"></div>
+    </div>
+    <div class="kpi-card orange">
+      <div class="kpi-icon">📞</div>
+      <div class="kpi-label">Appels pannes (échantillon)</div>
+      <div class="kpi-value">500</div>
+      <div class="kpi-sub">Répartis sur les 3 box</div>
+      <div class="kpi-bar" style="width:60%;background:linear-gradient(90deg,var(--accent4),#fbbf24)"></div>
+    </div>
+    <div class="kpi-card yellow">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-label">Taux de panne global</div>
+      <div class="kpi-value">0,52%</div>
+      <div class="kpi-sub">500 appels / 96 280 box vendues</div>
+      <div class="kpi-bar" style="width:40%;background:linear-gradient(90deg,var(--yellow),#f97316)"></div>
+    </div>
+    <div class="kpi-card red">
+      <div class="kpi-icon">⚠️</div>
+      <div class="kpi-label">Box la moins fiable</div>
+      <div class="kpi-value">Super'box</div>
+      <div class="kpi-sub">1,59% de taux de panne</div>
+      <div class="kpi-bar" style="width:85%;background:linear-gradient(90deg,var(--red),var(--accent4))"></div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-label">Box la plus fiable</div>
+      <div class="kpi-value">Top'Box</div>
+      <div class="kpi-sub">0,37% de taux de panne</div>
+      <div class="kpi-bar" style="width:30%;background:linear-gradient(90deg,var(--green),#6ee7b7)"></div>
+    </div>
+    <div class="kpi-card purple">
+      <div class="kpi-icon">🔢</div>
+      <div class="kpi-label">Indice de surreprésentation</div>
+      <div class="kpi-value">×3,06</div>
+      <div class="kpi-sub">Super'box : 3,27% du parc → 10% des pannes</div>
+      <div class="kpi-bar" style="width:70%;background:linear-gradient(90deg,var(--accent2),#ec4899)"></div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>🍩 Répartition des appels pannes par box</h3>
+      <div class="chart-wrapper"><canvas id="chartBoxRepPie"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>📊 Part dans le parc vendu vs Part dans les appels pannes</h3>
+      <div class="chart-wrapper"><canvas id="chartBoxRepCompar"></canvas></div>
+    </div>
+    <div class="chart-card full">
+      <h3>📉 Taux d'appels pannes pour 100 box vendues</h3>
+      <div class="chart-wrapper short"><canvas id="chartBoxRepRate"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title"><div class="icon">📋</div> Tableau récapitulatif par type de box</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Type de Box</th>
+          <th>Box vendues</th>
+          <th>Part du parc</th>
+          <th>Appels pannes</th>
+          <th>Part des appels</th>
+          <th>Taux de panne</th>
+          <th>1 appel pour</th>
+          <th>Indice</th>
+          <th>Fiabilité</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Rapid'Box</strong></td>
+          <td>56 250</td>
+          <td><span class="badge-blue">58,42 %</span></td>
+          <td>315</td>
+          <td><span class="badge-blue">63,0 %</span></td>
+          <td>0,56 %</td>
+          <td>~179 box</td>
+          <td><span class="badge-yellow">×1,08</span></td>
+          <td><span class="badge-yellow">Neutre</span></td>
+        </tr>
+        <tr>
+          <td><strong>Top'Box</strong></td>
+          <td>36 880</td>
+          <td><span class="badge-blue">38,31 %</span></td>
+          <td>135</td>
+          <td><span class="badge-blue">27,0 %</span></td>
+          <td>0,37 %</td>
+          <td>~273 box</td>
+          <td><span class="badge-green">×0,70</span></td>
+          <td><span class="badge-green">Fiable</span></td>
+        </tr>
+        <tr>
+          <td><strong>Super'Box</strong></td>
+          <td>3 150</td>
+          <td><span class="badge-blue">3,27 %</span></td>
+          <td>50</td>
+          <td><span class="badge-blue">10,0 %</span></td>
+          <td>1,59 %</td>
+          <td>~63 box</td>
+          <td><span class="badge-red">×3,06</span></td>
+          <td><span class="badge-red">À surveiller</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top:24px">
+    <div class="section-title"><div class="icon">💡</div> Insights clés</div>
+    <div class="insights-grid">
+      <div class="insight-card danger">
+        <div class="insight-icon">🚨</div>
+        <div>
+          <h4>Super'Box surreprésentée ×3 dans les pannes</h4>
+          <p>Avec seulement 3,27% du parc vendu, la Super'Box génère 10% des appels pannes. Son taux (1,59%) est 4× plus élevé que celui de la Top'Box.</p>
+        </div>
+      </div>
+      <div class="insight-card good">
+        <div class="insight-icon">🏆</div>
+        <div>
+          <h4>Top'Box : meilleure fiabilité (0,37%)</h4>
+          <p>38,3% du parc pour seulement 27% des appels pannes. Son indice de 0,70 confirme une qualité produit supérieure à la moyenne.</p>
+        </div>
+      </div>
+      <div class="insight-card info">
+        <div class="insight-icon">⚖️</div>
+        <div>
+          <h4>Rapid'Box : représentation équilibrée (×1,08)</h4>
+          <p>58,4% du parc pour 63% des appels. L'écart est proportionnel à son volume dominant. Elle génère 1 appel tous les ~179 box vendues.</p>
+        </div>
+      </div>
+      <div class="insight-card warn">
+        <div class="insight-icon">📉</div>
+        <div>
+          <h4>Super'Box ADSL : action corrective prioritaire</h4>
+          <p>Modèle en fin de cycle (ADSL), son fort taux de panne justifie une migration accélérée vers les offres Fibre et un suivi qualité renforcé.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════ SCRIPTS ═══════════════════════ -->
 <div class="tab-content" id="tab-senior">
   <div class="section-title"><div class="icon">🧾</div>Détails des appels évitables</div>
@@ -1500,6 +1656,67 @@ new Chart(document.getElementById('chartBoxAbo'), {
     type:'pie',
     data:{ labels:['60 ans et +','- de 60 ans'], datasets:[{ data:[before1967, after1967], backgroundColor:['rgba(79,142,247,0.85)','rgba(52,211,153,0.85)'] }]},
     options:{ plugins:{ legend:{ position:'right', labels:{font:{size:12}, padding:12} } } }
+  });
+})();
+// ─── TAB – RÉPARTITION BOX & PANNES ───
+(function(){
+  const boxes = ["Super'Box","Rapid'Box","Top'Box"];
+  const sold   = [3150, 56250, 36880];
+  const calls  = [50,   315,   135];
+  const totalSold  = sold.reduce((a,b)=>a+b,0);
+  const totalCalls = calls.reduce((a,b)=>a+b,0);
+  const mktShare  = sold.map(s=>+(s/totalSold*100).toFixed(2));
+  const callShare = calls.map(c=>+(c/totalCalls*100).toFixed(1));
+  const rate      = sold.map((s,i)=>+(calls[i]/s*100).toFixed(3));
+
+  new Chart(document.getElementById('chartBoxRepPie'), {
+    type:'doughnut',
+    data:{
+      labels: boxes.map((b,i)=>`${b} (${callShare[i]}%)`),
+      datasets:[{ data:calls, backgroundColor:['#f97316','#4f8ef7','#a78bfa'], borderWidth:0 }]
+    },
+    options:{ plugins:{ legend:{ position:'bottom', labels:{font:{size:11},padding:14} } }, cutout:'60%' }
+  });
+
+  new Chart(document.getElementById('chartBoxRepCompar'), {
+    type:'bar',
+    data:{
+      labels: boxes,
+      datasets:[
+        { label:'Part dans le parc vendu (%)', data:mktShare, backgroundColor:'rgba(79,142,247,0.75)', borderRadius:5 },
+        { label:'Part dans les appels pannes (%)', data:callShare, backgroundColor:'rgba(239,68,68,0.75)', borderRadius:5 }
+      ]
+    },
+    options:{
+      plugins:{ legend:{ labels:{font:{size:11}} } },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, ticks:{callback:v=>v+'%'}, max:70 },
+        x:{ grid:{display:false} }
+      }
+    }
+  });
+
+  new Chart(document.getElementById('chartBoxRepRate'), {
+    type:'bar',
+    data:{
+      labels: boxes,
+      datasets:[{
+        label:'Appels pannes pour 100 box vendues',
+        data: rate,
+        backgroundColor:['rgba(239,68,68,0.85)','rgba(245,158,11,0.8)','rgba(16,185,129,0.8)'],
+        borderRadius:8
+      }]
+    },
+    options:{
+      plugins:{
+        legend:{ display:false },
+        tooltip:{ callbacks:{ label:c=>`${c.raw} appel(s) pour 100 box vendues` } }
+      },
+      scales:{
+        y:{ grid:{color:'rgba(255,255,255,0.05)'}, title:{display:true,text:'Appels pour 100 box vendues'}, suggestedMax:2 },
+        x:{ grid:{display:false} }
+      }
+    }
   });
 })();
 
